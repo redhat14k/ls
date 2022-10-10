@@ -1,24 +1,33 @@
+#include<stdio.h>
+#include<stdlib.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <dirent.h>
 
-int main(int argc, char* argv[])
+int main(void)
 {
-    DIR *mydir;
-    struct dirent *myfile;
-    struct stat mystat;
+    char *curr_dir = NULL;
+    DIR *dp = NULL;
+    struct dirent *dptr = NULL;
+    unsigned int count = 0;
 
-    char buf[512];
-    mydir = opendir(argv[1]);
-    while((myfile = readdir(mydir)) != NULL)
+    curr_dir = getenv("PWD");
+    if(curr_dir == NULL)
     {
-        sprintf(buf, "%s/%s", argv[1], myfile->d_name);
-        stat(buf, &mystat);
-        printf("%zu",mystat.st_size);
-        printf(" %s\n", myfile->d_name);
+        printf("\n ERROR : Could not get the working directory\n");
+        return -1;
     }
-    closedir(mydir);
+
+    dp = opendir((const char*)curr_dir);
+    if(dp == NULL)
+    {
+        printf("\n ERROR : Could not open the working directory\n");
+        return -1;
+    }
+
+     for(count = 0; (dptr = readdir(dp)) != NULL ; count++)
+    {
+        printf("%s  ",dptr->d_name);
+    }
+    printf("\n %u", count);
+    return 0;
 }
